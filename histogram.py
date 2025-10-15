@@ -15,16 +15,16 @@ def grayHistogram():
         print("Error: Could not load image")
         return
 
-    plt.figure()
-    plt.imshow(img, cmap='gray')
+    # plt.figure()
+    # plt.imshow(img, cmap='gray')
 
     hist = cv.calcHist([img], [0], None, [256], [0,256])
+    return hist
 
+if __name__ == '__main__':
+    hist = grayHistogram()
     plt.figure()
     plt.plot(hist)
     plt.xlabel('bins')
     plt.ylabel('# of pixels')
     plt.show()
-
-if __name__ == '__main__':
-    grayHistogram()
