@@ -3,9 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-def grayHistogram():
+def grayHistogram(imgName):
     root = os.getcwd()
-    imgPath = os.path.join(root, 'rice.jpeg')
+    imgPath = os.path.join(root, imgName)
     if not os.path.exists(imgPath):
         print(f"Error: image not found at {imgPath}")
         return
@@ -22,7 +22,7 @@ def grayHistogram():
     return hist
 
 if __name__ == '__main__':
-    hist = grayHistogram()
+    hist = grayHistogram('rice.jpeg')
     plt.figure()
     plt.plot(hist)
     plt.xlabel('bins')

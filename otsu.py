@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from histogram import grayHistogram
 import numpy as np
 
-hist = grayHistogram()
+hist = grayHistogram('rice.jpeg')
 
 J_theta = None
 
