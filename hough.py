@@ -29,11 +29,8 @@ def houghLineTransform(imgName):
     plt.imshow(cannyEdges, cmap='gray')
     plt.title('Canny Edges')
     plt.axis('off')
+    lines = myHoughLines(cannyEdges)
 
-    disResolution = 1
-    angleResolution = np.pi / 180
-    threshold = 21
-    lines = cv.HoughLines(cannyEdges, disResolution, angleResolution, threshold)
 
     img_color = cv.cvtColor(img_gray, cv.COLOR_GRAY2BGR)
 
@@ -59,6 +56,37 @@ def houghLineTransform(imgName):
 
     plt.tight_layout()
     plt.show()
+
+def myHoughLines(edge_img, rho_res=1, theta_res=np.pi/180, threshold=22):
+    y_idxs, x_idxs = np.nonzero(edge_img)
+    height, width = edge_img.shape
+
+    diag_len = int(np.ceil(np.hypot(width, height)))
+
+    thetas = np.arange(0, np.pi, theta_res)
+    rhos = np.arange(-diag_len, diag_len + 1, rho_res)
+
+    accumulator = np.zeros((len(rhos), len(thetas)), dtype=np.uint64)
+
+    cos_t = np.cos(thetas)
+    sin_t = np.sin(thetas)
+
+    for i in range(len(x_idxs)):
+        x = x_idxs[i]
+        y = y_idxs[i]
+        rhos_values = x * cos_t + y * sin_t
+        rho_indices = np.round((rhos_values - rhos[0]) / rho_res).astype(int)
+        accumulator[rho_indices, np.arange(len(thetas))] += 1
+
+    lines = []
+    for r_idx in range(accumulator.shape[0]):
+        for t_idx in range(accumulator.shape[1]):
+            if accumulator[r_idx, t_idx] >= threshold:
+                rho = rhos[r_idx]
+                theta = thetas[t_idx]
+                lines.append([[rho, theta]])
+
+    return lines
 
 if __name__ == '__main__':
     houghLineTransform('rice.jpeg')
