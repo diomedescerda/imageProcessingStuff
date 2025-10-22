@@ -10,7 +10,6 @@ def houghLineTransform(imgName):
         print(f"Error: image not found at {imgPath}")
         return
 
-    # load as grayscale
     img_gray = cv.imread(imgPath, cv.IMREAD_GRAYSCALE)
     if img_gray is None:
         print("Error: Could not load image")
@@ -19,7 +18,6 @@ def houghLineTransform(imgName):
     cannyEdges = cv.Canny(img_gray, 50, 180)
 
     plt.figure()
-    # show grayscale and edges with proper cmap
     plt.subplot(131)
     plt.imshow(img_gray, cmap='gray')
     plt.title('Grayscale')

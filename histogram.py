@@ -3,17 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-def grayHistogram(imgName):
-    root = os.getcwd()
-    imgPath = os.path.join(root, imgName)
-    if not os.path.exists(imgPath):
-        print(f"Error: image not found at {imgPath}")
-        return
-
-    img = cv.imread(imgPath, cv.IMREAD_GRAYSCALE)
-    if img is None:
-        print("Error: Could not load image")
-        return
+def grayHistogram(img):
 
     # plt.figure()
     # plt.imshow(img, cmap='gray')
@@ -22,7 +12,16 @@ def grayHistogram(imgName):
     return hist
 
 if __name__ == '__main__':
-    hist = grayHistogram('rice.jpeg')
+    root = os.getcwd()
+    imgPath = os.path.join(root, 'rice.jpeg')
+    if not os.path.exists(imgPath):
+        print(f"Error: image not found at {imgPath}")
+
+    img = cv.imread(imgPath, cv.IMREAD_GRAYSCALE)
+    if img is None:
+        print("Error: Could not load image")
+
+    hist = grayHistogram(img)
     plt.figure()
     plt.plot(hist)
     plt.xlabel('bins')
