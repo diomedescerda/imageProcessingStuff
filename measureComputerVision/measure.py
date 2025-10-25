@@ -52,34 +52,27 @@ def filter_contours_by_area(contours, min_area=100, max_area=12526455):
     filtered = []
     for contour in contours:
         area = cv.contourArea(contour)
-        print(area)
         if min_area < area < max_area:
             filtered.append(contour)
     return filtered
 
 def measure_with_pca(contour, mm_per_pixel):
-    # Reshape contour to point cloud
     points = contour.reshape(-1, 2).astype(np.float64)
     
-    # Apply sklearn PCA
     pca = PCA()
     projected_points = pca.fit_transform(points)
     
-    # Get range along each principal component
     min_proj_x = np.min(projected_points[:, 0])
     max_proj_x = np.max(projected_points[:, 0])
     min_proj_y = np.min(projected_points[:, 1])
     max_proj_y = np.max(projected_points[:, 1])
     
-    # Calculate dimensions in pixels
     length_pixels = max_proj_x - min_proj_x
     width_pixels = max_proj_y - min_proj_y
     
-    # Convert to mm
     length_mm = length_pixels * mm_per_pixel
     width_mm = width_pixels * mm_per_pixel
     
-    # Get components for visualization
     mean = pca.mean_
     eigenvectors = pca.components_
     
