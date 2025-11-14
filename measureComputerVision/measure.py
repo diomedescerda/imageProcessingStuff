@@ -152,10 +152,9 @@ def measure_main(imgName, ref_size_mm=23.7):
     display_img = img.copy()
     results = []
 
-    print(f"Total contours: {len(contours)}")
     filtered = filter_contours_by_area(contours)
-    print(f"After area filter: {len(filtered)}")
 
+    print(f"Total contours: {len(filtered)}")
     for contour in filtered:
         if np.array_equal(contour, coin_contour):
             continue
