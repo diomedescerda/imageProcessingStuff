@@ -2,6 +2,8 @@ import numpy as np
 from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
+import cv2 as cv
+
 
 digits = load_digits()
 X = digits.data        # shape (1797, 64)
@@ -44,6 +46,7 @@ def softmax(x):
 def cross_entropy(pred, target):
     return -np.sum(target * np.log(pred + 1e-8)) / pred.shape[0]
 
+
 epochs = 50
 batch_size = 32
 num_batches = X_train.shape[0] // batch_size
@@ -54,8 +57,8 @@ for epoch in range(epochs):
     y_train = y_train[perm]
 
     for i in range(num_batches):
-        Xb = X_train[i*batch_size:(i+1)*batch_size]
-        yb = y_train[i*batch_size:(i+1)*batch_size]
+        Xb = X_train[i * batch_size:(i + 1) * batch_size]
+        yb = y_train[i * batch_size:(i + 1) * batch_size]
 
         # Forward pass
         z1 = Xb @ W1 + b1
@@ -82,16 +85,48 @@ for epoch in range(epochs):
         W2 -= lr * dW2
         b2 -= lr * db2
 
-    if (epoch+1) % 5 == 0 or epoch == 0:
-        print(f"Epoch {epoch+1}/{epochs} - Loss: {loss:.4f}")
+    if (epoch + 1) % 5 == 0 or epoch == 0:
+        print(f"Epoch {epoch + 1}/{epochs} - Loss: {loss:.4f}")
 
 def predict(X):
     a1 = sigmoid(X @ W1 + b1)
     y_pred = softmax(a1 @ W2 + b2)
     return np.argmax(y_pred, axis=1)
 
+def preprocess_custom_image(path):
+    img = cv.imread(path, cv.IMREAD_GRAYSCALE)
+    if img is None:
+        raise ValueError("Could not load image")
+
+    # Invert if background is white and digit is black
+    if np.mean(img) > 127:
+        img = 255 - img
+
+    # Apply blur to mimic the dataset
+    img = cv.GaussianBlur(img, (5, 5), 0)
+
+    # Resize to 8x8 with the same smoothing effect
+    img_resized = cv.resize(img, (8, 8), interpolation=cv.INTER_AREA)
+
+    # Normalize to 0–16 like sklearn
+    img_scaled = (img_resized / 255.0) * 16.0
+
+    # Flatten
+    img_flat = img_scaled.flatten().reshape(1, -1)
+
+    return img_flat
+
+
 y_test_labels = np.argmax(y_test, axis=1)
 preds = predict(X_test)
 
 accuracy = np.mean(preds == y_test_labels)
 print("Test Accuracy:", accuracy)
+
+# Test custom image
+custom_img = preprocess_custom_image("number3.png")
+pred_custom = predict(custom_img)
+
+print("---")
+print("Prediction for custom image:", pred_custom[0])
+print("---")
